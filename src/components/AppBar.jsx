@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flexDirection: 'row',
-  }
+  },
 });
 
 const AppBar = () => {
@@ -44,14 +44,23 @@ const AppBar = () => {
           <Text style={styles.text}>Repositories</Text>
         </Link>
         {authorizedUser ?
-
-        <Link to="/signin" component={TouchableOpacity} onPress={signOut}>
-          <Text style={styles.text}>Sign out</Text>
-        </Link>
+          <>
+          <Link to="/createreview" component={TouchableOpacity} >
+            <Text style={styles.text}>Create a review</Text>
+          </Link>
+          <Link to="/signin" component={TouchableOpacity} onPress={signOut}>
+            <Text style={styles.text}>Sign out</Text>
+          </Link>
+          </>
         :
+        <>
         <Link to="/signin" component={TouchableOpacity}>
           <Text style={styles.text}>Sign in</Text>
         </Link>
+        <Link to="/signup" component={TouchableOpacity}>
+          <Text style={styles.text}>Sign up</Text>
+        </Link>
+        </>
         }
       </ScrollView>
     </View>

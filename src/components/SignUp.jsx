@@ -6,6 +6,7 @@ import Text from './Text';
 import theme from '../theme';
 import * as yup from 'yup';
 import useSignIn from '../hooks/useSignIn';
+import useCreateUser from '../hooks/useCreateUser';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,16 +39,16 @@ const styles = StyleSheet.create({
 const initialValues = {
   username: '',
   password: '',
+  passwordConfirm: ''
 };
-
 const SignInForm = ({onSubmit}) => {
   return (
     <View style={styles.container}>
       <FormikTextInput testID="usernameField" name="username" placeholder="Username" style={styles.text}/>
-      <FormikTextInput testID="passwordField" name="password" placeholder="Password" style={styles.text} secureTextEntry/>
-      <TouchableOpacity testID="submitButton" style={styles.buttonBorder} onPress={onSubmit}>
-
-        <Text style={styles.buttonText}>Sign in</Text>
+      <FormikTextInput testID="passwordField" name="password" placeholder="Password" style={styles.text} />
+      <FormikTextInput testID="passwordConfirmationField" name="passwordConfirm" placeholder="Password confirmation" style={styles.text} />
+      <TouchableOpacity testID="signUpButton" style={styles.buttonBorder} onPress={onSubmit}>
+        <Text style={styles.buttonText}>Sign up</Text>
       </TouchableOpacity>
     </View>
   );
@@ -56,13 +57,19 @@ const SignInForm = ({onSubmit}) => {
 const validationSchema = yup.object().shape({
   username: yup
     .string()
+    .min(1).max(30)
     .required('Username is required'),
   password: yup
     .string()
+    .min(5).max(50)
     .required('Password is required'),
+  passwordConfirm: yup
+    .string()
+    .oneOf([yup.ref('password'), null], "Passwords don't match")
+    .required('Password confirmation is required'),
 });
 
-export const SignInContainer =({ onSubmit }) => {
+export const SignUpContainer =({ onSubmit }) => {
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
       {({ handleSubmit }) => <SignInForm onSubmit={handleSubmit} />}
@@ -71,21 +78,24 @@ export const SignInContainer =({ onSubmit }) => {
 };
 
 
-const SignIn = () => {
+const SignUp = () => {
   const [signIn] = useSignIn();
+  const [signUp] = useCreateUser();
 
   const onSubmit = async (values) => {
     const { username, password } = values;
     try {
-      const { data } = await signIn({ username, password });
+      await signUp({ username, password});
+      await signIn({ username, password });
       
-      console.log(data);
     } catch (e) {
       console.log(e);
     };
   };
-
-  return <SignInContainer onSubmit={onSubmit} />;
+  
+  return <SignUpContainer onSubmit={onSubmit}/>;
+  
 };
 
-export default SignIn;
+
+export default SignUp;
